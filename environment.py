@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
 
 from matplotlib import cm
@@ -166,13 +165,13 @@ class GridWorld:
 		# If a reward vector was not informed we get -1 everywhere until
 		# termination. After termination this function is not called anymore,
 		# thus we can just return 0 elsewhere in the code.
-		if self.rewardFunction.any() == None and self.useNegativeRewards:
+		if not self.option_dicovery and self.useNegativeRewards:
 			if self.matrixMDP[nextX][nextY] == -1 \
 				or self._getStateIndex(nextX, nextY) == self.numStates:
 				return 0
 			else:
 				return -1
-		elif self.rewardFunction.any() == None and not self.useNegativeRewards:
+		elif not self.option_dicovery == None and not self.useNegativeRewards:
 			if nextX == self.goalX and nextY == self.goalY:
 				return 1
 			else:
@@ -209,7 +208,7 @@ class GridWorld:
 		# Basically I get what will be the next state and before really making
 		# it my current state I verify everything is sound (it is terminal only
 		# if we are not using eigenpurposes).
-		if self.rewardFunction.any() == None and self.isTerminal():
+		if not self.option_dicovery and self.isTerminal():
 			return 0
 		else:
 			nextX, nextY = self._getNextState(action)

@@ -70,6 +70,7 @@ def discoverOptions(env:GridWorld, epsilon, verbose=False, discoverNegation=Fals
         
         polIter = Learning(0.9, env, augmentActionSet=True)
         env.defineRewardFunction(eigenvectors[:, idx])
+        env.defineOptionDiscovery(True)
         
         
         V, pi = polIter.solvePolicyIteration()
@@ -88,6 +89,7 @@ def discoverOptions(env:GridWorld, epsilon, verbose=False, discoverNegation=Fals
         optionsActionSet.append('terminate')
         actionSetPerOption.append(optionsActionSet)
     
+    env.defineOptionDiscovery(False)
     env.defineRewardFunction(None)
     env.reset()
     
@@ -186,42 +188,42 @@ if __name__ == '__main__':
     num_seeds = 1
     # i, j = env.getStateXY(0)
     # print(i, j)
-    a = discoverOptions(env, 0.0, plotGraphs=True)
+    # a = discoverOptions(env, 0.0, plotGraphs=True)
     # print(a[0])
-    # returns_eval_primitive, returns_eval, totalOptionsToUse = qLearningWithOptions(
-	# 		env=env, alpha=0.1, gamma=0.9, options_eps=0.0, epsilon=1.0, nSeeds=num_seeds,
-	# 		maxLengthEp=100, nEpisodes=500,
-	# 		verbose=False, useNegation=False,
-	# 		genericNumOptionsToEvaluate = [1, 2, 4, 32, 64, 128],
-	# 		loadedOptions=None)
+    returns_eval_primitive, returns_eval, totalOptionsToUse = qLearningWithOptions(
+			env=env, alpha=0.1, gamma=0.9, options_eps=0.0, epsilon=1.0, nSeeds=num_seeds,
+			maxLengthEp=100, nEpisodes=500,
+			verbose=False, useNegation=False,
+			genericNumOptionsToEvaluate = [1, 2, 4, 32, 64, 128, 256],
+			loadedOptions=None)
     
-    # color_idx = 0
-    # average = np.mean(returns_eval_primitive, axis=0)
-    # std_dev = np.std(returns_eval_primitive, axis=0)
+    color_idx = 0
+    average = np.mean(returns_eval_primitive, axis=0)
+    std_dev = np.std(returns_eval_primitive, axis=0)
     
-    # minConfInt, maxConfInt = computeConfInterval(average, std_dev, num_seeds)
+    minConfInt, maxConfInt = computeConfInterval(average, std_dev, num_seeds)
     
-    # plt.plot(movingAverage(average), label='prim. act.', color=colors[color_idx])
-    # plt.fill_between(range(len(movingAverage(average))), 
-    #                  movingAverage(minConfInt), movingAverage(maxConfInt), 
-    #                  alpha=0.5, color=colors[color_idx])
+    plt.plot(movingAverage(average), label='prim. act.', color=colors[color_idx])
+    plt.fill_between(range(len(movingAverage(average))), 
+                     movingAverage(minConfInt), movingAverage(maxConfInt), 
+                     alpha=0.5, color=colors[color_idx])
     
-    # for idx, numOptionsToUse in enumerate(totalOptionsToUse):
-    #     color_idx += 1
-    #     average = np.mean(returns_eval[idx], axis=0)
-    #     std_dev = np.std(returns_eval[idx], axis=0)
-    #     minConfInt, maxConfInt = computeConfInterval(average, std_dev, num_seeds)
+    for idx, numOptionsToUse in enumerate(totalOptionsToUse):
+        color_idx += 1
+        average = np.mean(returns_eval[idx], axis=0)
+        std_dev = np.std(returns_eval[idx], axis=0)
+        minConfInt, maxConfInt = computeConfInterval(average, std_dev, num_seeds)
 
         
-    #     plt.plot(movingAverage(average),
-    #         label=str(numOptionsToUse) + ' opt.', color=colors[color_idx])
+        plt.plot(movingAverage(average),
+            label=str(numOptionsToUse) + ' opt.', color=colors[color_idx])
 
-    #     plt.fill_between(range(len(movingAverage(average))),
-    #         movingAverage(minConfInt), movingAverage(maxConfInt),
-    #         alpha=0.5, color=colors[color_idx])
+        plt.fill_between(range(len(movingAverage(average))),
+            movingAverage(minConfInt), movingAverage(maxConfInt),
+            alpha=0.5, color=colors[color_idx])
 
-    # plt.legend(loc='upper left', prop={'size':10}, bbox_to_anchor=(1,1))
-    # plt.tight_layout(pad=7)
-    # plt.show()
+    plt.legend(loc='upper left', prop={'size':10}, bbox_to_anchor=(1,1))
+    plt.tight_layout(pad=7)
+    plt.show()
     
     
