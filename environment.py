@@ -1,36 +1,13 @@
-'''
-This class implements simple gridworlds. It reads a string, or a file containing
-the string, and generates the MDP. I just implemented a tabular representation
-for this class, it is hard to try to propose something else for gridworlds.
-Author: Marlos C. Machado
-'''
 import sys
 import numpy as np
 import matplotlib
-import matplotlib.pylab as plt
-import mpl_toolkits.mplot3d.axes3d as axes3d
+import matplotlib.pyplot as plt
 
 from matplotlib import cm
 
 np.set_printoptions(threshold=np.inf)
 
 class GridWorld:
-	
-	strMDP  = ''
-	numRows = -1
-	numCols = -1
-	numStates = -1
-	matrixMDP = None
-	adjMatrix = None
-	rewardFunction = None
-	useNegativeRewards = False
-
-	currX = 0
-	currY = 0
-	startX = 0
-	startY = 0
-	goalX = 0
-	goalY = 0
 
 	def __init__(self, path=None, strin=None, useNegativeRewards=False):
 		'''Return a GridWorld object that instantiates the MDP defined in a file
@@ -40,12 +17,31 @@ class GridWorld:
 		two numbers separated by a comma. These numbers define the dimensions of
 		the MDP. The rest of the lines are composed of X's denoting walls and of
 		.'s denoting empty spaces in the MDP. S denotes the starting state.'''
+  
+		self.strMDP  = ''
+		self.numRows = -1
+		self.numCols = -1
+		self.numStates = -1
+		self.matrixMDP = None
+		self.adjMatrix = None
+		self.rewardFunction = None
+		self.useNegativeRewards = False
+		self.option_dicovery = False
+
+		self.currX = 0
+		self.currY = 0
+		self.startX = 0
+		self.startY = 0
+		self.goalX = 0
+		self.goalY = 0
+	
+  
 		if path != None:
 			self._readFile(path)
 		elif strin != None:
 			self.strMDP = strin
 		else:
-			print 'You are supposed to provide an MDP specification as input!'
+			print('You are supposed to provide an MDP specification as input!') 
 			sys.exit()
 
 		self._parseString()
@@ -69,8 +65,8 @@ class GridWorld:
 		self.numCols = int(data[0].split(',')[1])
 		self.matrixMDP = np.zeros((self.numRows, self.numCols))
 
-		for i in xrange(len(data) - 1):
-			for j in xrange(len(data[i+1])):
+		for i in range(len(data) - 1):
+			for j in range(len(data[i+1])):
 				if data[i+1][j] == 'X':
 					self.matrixMDP[i][j] = -1
 				elif data[i+1][j] == '.':
@@ -94,7 +90,7 @@ class GridWorld:
 		''' Given the index that uniquely identifies each state this method
 			returns its equivalent coordinate (x,y).'''
 		y = idx % self.numCols
-		x = (idx - y)/self.numCols
+		x = (idx - y)//self.numCols
 
 		return x, y
 
@@ -103,13 +99,16 @@ class GridWorld:
 		    given an action. It does not update the next state, it is a one-step
 		    forward model. '''
 
+
+		self.currX = int(self.currX)
+		self.currY = int(self.currY)
 		nextX = self.currX
 		nextY = self.currY
 
 		if action == 'terminate':
 			# In this case we are not discovering options
 			# we are just talking about a general MDP.
-			if self.rewardFunction == None:
+			if self.rewardFunction.any() == None:
 				if nextX == self.goalX and nextY == self.goalY:
 					return -1, -1 # absorbing state
 				else:
@@ -119,7 +118,8 @@ class GridWorld:
 			else:
 				return -1, -1 # absorbing state
 
-		if self.matrixMDP[self.currX][self.currY] != -1:
+
+		if self.matrixMDP[self.currX, self.currY] != -1:
 			if action == 'up' and self.currX > 0:
 				nextX = self.currX - 1
 				nextY = self.currY
@@ -134,13 +134,13 @@ class GridWorld:
 				nextY = self.currY - 1
 
 		if nextX < 0 or nextY < 0:
-			print 'You were supposed to have hit a wall before!' 
-			print 'There is something wrong with your MDP definition.'
+			print('You were supposed to have hit a wall before!') 
+			print('There is something wrong with your MDP definition.') 
 			sys.exit()
 
 		if nextX == len(self.matrixMDP) or nextY == len(self.matrixMDP[0]):
-			print 'You were supposed to have hit a wall before!' 
-			print 'There is something wrong with your MDP definition.'
+			print('You were supposed to have hit a wall before!')  
+			print('There is something wrong with your MDP definition.') 
 			sys.exit()
 
 		if self.matrixMDP[nextX][nextY] != -1:
@@ -166,13 +166,13 @@ class GridWorld:
 		# If a reward vector was not informed we get -1 everywhere until
 		# termination. After termination this function is not called anymore,
 		# thus we can just return 0 elsewhere in the code.
-		if self.rewardFunction == None and self.useNegativeRewards:
+		if self.rewardFunction.any() == None and self.useNegativeRewards:
 			if self.matrixMDP[nextX][nextY] == -1 \
 				or self._getStateIndex(nextX, nextY) == self.numStates:
 				return 0
 			else:
 				return -1
-		elif self.rewardFunction == None and not self.useNegativeRewards:
+		elif self.rewardFunction.any() == None and not self.useNegativeRewards:
 			if nextX == self.goalX and nextY == self.goalY:
 				return 1
 			else:
@@ -209,7 +209,7 @@ class GridWorld:
 		# Basically I get what will be the next state and before really making
 		# it my current state I verify everything is sound (it is terminal only
 		# if we are not using eigenpurposes).
-		if self.rewardFunction == None and self.isTerminal():
+		if self.rewardFunction.any() == None and self.isTerminal():
 			return 0
 		else:
 			nextX, nextY = self._getNextState(action)
@@ -239,12 +239,12 @@ class GridWorld:
 		'''I'll try for all states not in the borders (they have to be walls)
 		all 4 possible directions. If the next state is also available we add
 		such entry to the adjancency matrix, otherwise we don't.'''
-		for i in xrange(len(self.idxMatrix)):
-			for j in xrange(len(self.idxMatrix[i])):
+		for i in range(len(self.idxMatrix)):
+			for j in range(len(self.idxMatrix[i])):
 				self.idxMatrix[i][j] = i * self.numCols + j
 
-		for i in xrange(len(self.matrixMDP)):
-			for j in xrange(len(self.matrixMDP[i])):
+		for i in range(len(self.matrixMDP)):
+			for j in range(len(self.matrixMDP[i])):
 				if i != 0 and i != (self.numRows - 1) and j != 0 and j != (self.numCols - 1):
 					if self.matrixMDP[i + 1][j] != -1:
 						self.adjMatrix[self.idxMatrix[i][j]][self.idxMatrix[i + 1][j]] = 1
@@ -281,7 +281,7 @@ class GridWorld:
 		# Now I can ask what will happen next in this new state
 		nextStateIdx = None
 		reward = None
-		if self.rewardFunction == None and self.isTerminal():
+		if self.isTerminal():
 			nextStateIdx = self.numStates
 			reward = 0
 		else:
@@ -339,7 +339,7 @@ class GridWorld:
 		while nextAction != aTerminate:
 			nextAction = o_pi[currState]
 			self.currX, self.currY = self.getStateXY(currState)
-			if self.rewardFunction == None and self.isTerminal():
+			if not self.option_dicovery and self.isTerminal():
 				nextStateIdx = self.numStates
 				nextAction = aTerminate
 				reward = 0
@@ -367,6 +367,9 @@ class GridWorld:
 		''' Load vector that will define the reward function: the dot product
 		    between the loaded vector and the feature representation.'''
 		self.rewardFunction = vector
+  
+	def defineOptionDiscovery(self, value):
+		self.option_dicovery = value
 
 	def defineGoalState(self, idx):
 		''' Returns True if the goal was properly set, otherwise returns False.
