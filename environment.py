@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 
 from matplotlib import cm
@@ -165,17 +166,19 @@ class GridWorld:
 		# If a reward vector was not informed we get -1 everywhere until
 		# termination. After termination this function is not called anymore,
 		# thus we can just return 0 elsewhere in the code.
-		if not self.option_dicovery and self.useNegativeRewards:
+		# print(self.rewardFunction)
+		if type(self.rewardFunction)==type(None) and self.useNegativeRewards:
 			if self.matrixMDP[nextX][nextY] == -1 \
 				or self._getStateIndex(nextX, nextY) == self.numStates:
 				return 0
 			else:
 				return -1
-		elif not self.option_dicovery == None and not self.useNegativeRewards:
+		elif type(self.rewardFunction)==type(None) and not self.useNegativeRewards:
 			if nextX == self.goalX and nextY == self.goalY:
 				return 1
 			else:
 				return 0
+		
 
 		# I first look at the state I am in
 		currStateIdx = self._getStateIndex(currX, currY)
@@ -183,8 +186,12 @@ class GridWorld:
 		nextStateIdx = self._getStateIndex(nextX, nextY)
 
 		# Now I can finally compute the reward
-		reward = self.rewardFunction[nextStateIdx] \
+		try:
+			reward = self.rewardFunction[nextStateIdx] \
 			- self.rewardFunction[currStateIdx]
+		except:
+			print(type(None))
+			
 
 		return reward
 
@@ -208,7 +215,7 @@ class GridWorld:
 		# Basically I get what will be the next state and before really making
 		# it my current state I verify everything is sound (it is terminal only
 		# if we are not using eigenpurposes).
-		if not self.option_dicovery and self.isTerminal():
+		if type(self.rewardFunction)==type(None) and self.isTerminal():
 			return 0
 		else:
 			nextX, nextY = self._getNextState(action)
@@ -280,7 +287,7 @@ class GridWorld:
 		# Now I can ask what will happen next in this new state
 		nextStateIdx = None
 		reward = None
-		if self.isTerminal():
+		if type(self.rewardFunction) == type(None) and self.isTerminal():
 			nextStateIdx = self.numStates
 			reward = 0
 		else:

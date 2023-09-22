@@ -70,11 +70,9 @@ def discoverOptions(env:GridWorld, epsilon, verbose=False, discoverNegation=Fals
         
         polIter = Learning(0.9, env, augmentActionSet=True)
         env.defineRewardFunction(eigenvectors[:, idx])
-        env.defineOptionDiscovery(True)
         
         
         V, pi = polIter.solvePolicyIteration()
-        
         
         for j in range(len(V)):
             if V[j] < epsilon:
@@ -89,7 +87,6 @@ def discoverOptions(env:GridWorld, epsilon, verbose=False, discoverNegation=Fals
         optionsActionSet.append('terminate')
         actionSetPerOption.append(optionsActionSet)
     
-    env.defineOptionDiscovery(False)
     env.defineRewardFunction(None)
     env.reset()
     
@@ -188,13 +185,13 @@ if __name__ == '__main__':
     num_seeds = 1
     # i, j = env.getStateXY(0)
     # print(i, j)
-    # a = discoverOptions(env, 0.0, plotGraphs=True)
+    a = discoverOptions(env, 0.0, plotGraphs=True)
     # print(a[0])
     returns_eval_primitive, returns_eval, totalOptionsToUse = qLearningWithOptions(
 			env=env, alpha=0.1, gamma=0.9, options_eps=0.0, epsilon=1.0, nSeeds=num_seeds,
 			maxLengthEp=100, nEpisodes=500,
 			verbose=False, useNegation=False,
-			genericNumOptionsToEvaluate = [1, 2, 4, 32, 64, 128, 256],
+			genericNumOptionsToEvaluate = [1, 2, 4, 32, 64, 128],
 			loadedOptions=None)
     
     color_idx = 0
