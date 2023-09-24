@@ -10,6 +10,9 @@ Images from the paper:
   <em>Second PVF (left) and its corresponding option (right) in the 4-room domain. Action terminate is depicted in red (top right corner), other actions are depicted as arrows.</em>
 </p>
 
+![](images/paper1.png)
+*Second PVF (left) and its corresponding option (right) in the 4-room domain. Action terminate is depicted in red (top right corner), other actions are depicted as arrows.*
+
 <p align="middle" >
   <img src="images/paper2.png" width="600" />
   <em>Options obtained from the four smallest eigenvectors in the 4-room domain. Action terminate is depicted in red.</em>
