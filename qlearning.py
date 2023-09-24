@@ -34,6 +34,7 @@ class QLearning:
 			self.actionSet = actionSet
 			self.optionsActionSet = actionSetPerOption
 
+
 		if self.toLearnUsingOnlyPrimitiveActions:
 			if self.epsilon != 1.0:
 				print('Something will go wrong. Epsilon should be 1.0 when \
