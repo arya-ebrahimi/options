@@ -13,12 +13,8 @@ Images from the paper:
 
 Images obtained by running the official Python2 code:
 
-![](images/python2/168_policy.png) ![](images/python2/167_policy.png) ![](images/python2/166_policy.png) ![](images/python2/165_policy.png)
+![](images/python2/168_policy.png)             |  ![](images/python2/167_policy.png) | ![](images/python2/166_policy.png) | ![](images/python2/165_policy.png)
+:-------------------------:|:-------------------------:|:-------:|:------:|
 
-<p align="middle" >
-  <img src="images/python2/168_policy.png" width="150" />
-  <img src="images/python2/167_policy.png" width="150" />
-  <img src="images/python2/166_policy.png" width="150" />
-  <img src="images/python2/165_policy.png" width="150" />
-  <em>Options obtained from the four smallest eigenvectors in the 4-room domain. Action terminate is depicted using dots.</em>
-</p>
+*Options obtained from the four smallest eigenvectors in the 4-room domain. Action terminate is depicted using dots.*
+  
